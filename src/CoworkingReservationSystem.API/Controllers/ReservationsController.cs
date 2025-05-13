@@ -32,7 +32,7 @@ public class ReservationsController : ControllerBase
         return result.IsSuccess ? Ok(result) : BadRequest(result);
     }
 
-    [HttpDelete("{id}")]
+    [HttpPatch("{id}/Status")]
     public async Task<IActionResult> Cancel(int id)
     {
         int userID = int.Parse(User.FindFirst("id")?.Value);

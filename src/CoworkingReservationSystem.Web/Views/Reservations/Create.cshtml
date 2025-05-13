@@ -1,0 +1,110 @@
+@model CoworkingReservationSystem.Web.Models.ViewModels.ReservationRequestViewModel
+@{
+    ViewData["Title"] = "Nova Reserva";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow-sm ui-widget-content ui-corner-all">
+                <div class="card-header bg-primary text-white ui-corner-top">
+                    <h3><i class="bi bi-calendar-plus"></i> @ViewData["Title"]</h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" id="reservationForm">
+                        <!-- Sala -->
+                        <div class="mb-3">
+                            <label asp-for="RoomId" class="form-label"></label>
+                            <select asp-for="RoomId" asp-items="Model.AvailableRooms" 
+                                    class="form-select ui-widget-content">
+                                <option value="">Selecione uma sala...</option>
+                            </select>
+                            <span asp-validation-for="RoomId" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Data/Hora -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="StartDate" class="form-label"></label>
+                                <input asp-for="StartDate" type="datetime-local" 
+                                       class="form-control ui-widget-content">
+                                <span asp-validation-for="StartDate" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="EndDate" class="form-label"></label>
+                                <input asp-for="EndDate" type="datetime-local" 
+                                       class="form-control ui-widget-content">
+                                <span asp-validation-for="EndDate" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <!-- Observações -->
+                        <div class="mb-3">
+                            <label asp-for="Notes" class="form-label"></label>
+                            <textarea asp-for="Notes" class="form-control ui-widget-content" 
+                                      rows="3" placeholder="Detalhes adicionais..."></textarea>
+                        </div>
+
+                        <!-- Ações -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="Index" class="btn btn-outline-secondary ui-button">
+                                <i class="bi bi-arrow-left"></i> Voltar
+                            </a>
+                            <button type="submit" class="btn btn-primary ui-button">
+                                <i class="bi bi-check-circle"></i> Reservar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function() {
+            // Datepicker jQuery UI
+            $("input[type='datetime-local']").each(function() {
+                $(this).attr("type", "text").datepicker({
+                    dateFormat: "yy-mm-dd",
+                    minDate: 0
+                });
+            });
+
+            // Timepicker
+            $("#StartDate, #EndDate").timepicker({
+                timeFormat: "HH:mm",
+                step: 30
+            });
+
+            // Validação
+            $("#reservationForm").validate({
+                rules: {
+                    RoomId: "required",
+                    StartDate: {
+                        required: true,
+                        date: true
+                    },
+                    EndDate: {
+                        required: true,
+                        date: true,
+                        greaterThanStart: "#StartDate"
+                    }
+                },
+                messages: {
+                    EndDate: {
+                        greaterThanStart: "O término deve ser após o início"
+                    }
+                }
+            });
+
+            // Método customizado para validar datas
+            $.validator.addMethod("greaterThanStart", function(value, element, params) {
+                const startDate = new Date($(params).val());
+                const endDate = new Date(value);
+                return endDate > startDate;
+            });
+        });
+    </script>
+}

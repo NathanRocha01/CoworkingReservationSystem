@@ -1,0 +1,106 @@
+﻿@{
+    ViewData["Title"] = "Home - Sistema de Reservas";
+}
+
+<div class="container-fluid px-0">
+    <!-- Hero Section com Efeito Paralax -->
+    <div class="parallax-section" style="background-image: url('/images/coworking-space.jpg');">
+        <div class="hero-overlay">
+            <h1 class="display-3 fw-bold text-white">Bem-vindo ao Coworking</h1>
+            <p class="lead text-light">Reserve salas inteligentes com um clique</p>
+
+            <div class="cta-buttons mt-4">
+                @if (User.Identity.IsAuthenticated)
+                {
+                        <button id="newReservationBtn" class="btn btn-primary btn-lg ui-button">
+                            <i class="bi bi-calendar-plus"></i> Nova Reserva
+                        </button>
+                }
+                else
+                {
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-primary btn-lg ui-button">
+                            <i class="bi bi-box-arrow-in-right"></i> Entrar
+                        </a>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Features com Accordion jQuery UI -->
+    <div class="container my-5">
+        <h2 class="text-center mb-4">Nossos Diferenciais</h2>
+        <div id="featuresAccordion" class="ui-accordion">
+            <h3 class="ui-accordion-header"><i class="bi bi-speedometer2 me-2"></i>Agilidade</h3>
+            <div class="ui-accordion-content">
+                <p>Reservas em menos de 1 minuto com nosso sistema otimizado.</p>
+                <div class="progress ui-progressbar">
+                    <div class="progress-bar" style="width: 95%">95% mais rápido</div>
+                </div>
+            </div>
+
+            <h3 class="ui-accordion-header"><i class="bi bi-shield-lock me-2"></i>Segurança</h3>
+            <div class="ui-accordion-content">
+                <p>Todas as reservas são criptografadas e protegidas.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+        <style>
+            .parallax-section {
+                height: 70vh;
+                background-attachment: fixed;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-size: cover;
+                position: relative;
+            }
+            .hero-overlay {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                text-align: center;
+            }
+            .ui-accordion-content {
+                padding: 20px;
+                background: #f8f9fa;
+                border-radius: 0 0 5px 5px;
+            }
+            .ui-button {
+                transition: all 0.3s !important;
+            }
+        </style>
+}
+
+@section Scripts {
+        <script>
+            $(function() {
+                // Accordion jQuery UI
+                $("#featuresAccordion").accordion({
+                    heightStyle: "content",
+                    collapsible: true,
+                    active: 0
+                });
+
+                // Botão com efeito jQuery UI
+                $(".ui-button").button().hover(
+                    function() {
+                        $(this).addClass("ui-state-hover");
+                    },
+                    function() {
+                        $(this).removeClass("ui-state-hover");
+                    }
+                );
+
+                // Progress Bar animado
+                $(".ui-progressbar").progressbar({
+                    value: false,
+                    change: function() {
+                        $(".ui-progressbar .progress-bar").css("width", "95%");
+                    }
+                });
+            });
+        </script>
+}

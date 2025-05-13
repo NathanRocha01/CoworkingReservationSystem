@@ -1,0 +1,80 @@
+﻿@{
+    ViewData["Title"] = "Política de Privacidade";
+}
+
+<div class="container privacy-container">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow-sm ui-corner-all">
+                <div class="card-header bg-primary text-white ui-corner-top">
+                    <h2><i class="bi bi-shield-lock"></i> @ViewData["Title"]</h2>
+                </div>
+                <div class="card-body">
+                    <div id="privacyTabs">
+                        <ul class="nav nav-tabs ui-tabs-nav">
+                            <li class="nav-item"><a class="nav-link" href="#tabs-1">Dados Coletados</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#tabs-2">Cookies</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#tabs-3">LGPD</a></li>
+                        </ul>
+
+                        <div id="tabs-1" class="p-3">
+                            <h4>Informações armazenadas:</h4>
+                            <ul class="list-group ui-widget-content">
+                                <li class="list-group-item">Nome completo</li>
+                                <li class="list-group-item">E-mail</li>
+                                <li class="list-group-item">Histórico de reservas</li>
+                            </ul>
+                        </div>
+
+                        <div id="tabs-2" class="p-3">
+                            <div class="alert alert-warning ui-state-highlight">
+                                <i class="bi bi-exclamation-triangle"></i> Utilizamos cookies essenciais para autenticação.
+                            </div>
+                        </div>
+
+                        <div id="tabs-3" class="p-3">
+                            <p>Seguimos todas as diretrizes da Lei Geral de Proteção de Dados.</p>
+                            <button id="lgpdMoreInfo" class="btn btn-outline-primary ui-button">Mais informações</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function() {
+            // Tabs jQuery UI com estilo Bootstrap
+            $("#privacyTabs").tabs({
+                activate: function(event, ui) {
+                    $(".nav-link").removeClass("active");
+                    ui.newTab.find("a").addClass("active");
+                }
+            });
+
+            // Tooltip
+            $("#lgpdMoreInfo").button().tooltip({
+                content: "Lei 13.709/2018 - Regulamentação em vigor",
+                show: { effect: "slideDown", duration: 200 }
+            });
+        });
+    </script>
+
+    <style>
+        .privacy-container {
+            margin-top: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .ui-tabs-nav {
+            border-bottom: none;
+        }
+
+        .ui-widget-content {
+            border: 1px solid #dee2e6;
+            border-top: none;
+        }
+    </style>
+}

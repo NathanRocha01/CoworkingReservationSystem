@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D0742357-F9E7-4BA8-9DBF-9D18CBA93448}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoworkingReservationSystem", "src\CoworkingReservationSystem.API\CoworkingReservationSystem.csproj", "{6D875A9F-2BD8-4C56-9390-BFBE69ED9C1E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoworkingReservationSystem.Web", "src\CoworkingReservationSystem.Web\CoworkingReservationSystem.Web.csproj", "{EEBFBEBF-4F46-4B54-8C88-DF30711CFC8D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6D875A9F-2BD8-4C56-9390-BFBE69ED9C1E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D875A9F-2BD8-4C56-9390-BFBE69ED9C1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D875A9F-2BD8-4C56-9390-BFBE69ED9C1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D875A9F-2BD8-4C56-9390-BFBE69ED9C1E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EEBFBEBF-4F46-4B54-8C88-DF30711CFC8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EEBFBEBF-4F46-4B54-8C88-DF30711CFC8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EEBFBEBF-4F46-4B54-8C88-DF30711CFC8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EEBFBEBF-4F46-4B54-8C88-DF30711CFC8D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{6D875A9F-2BD8-4C56-9390-BFBE69ED9C1E} = {D0742357-F9E7-4BA8-9DBF-9D18CBA93448}
+		{EEBFBEBF-4F46-4B54-8C88-DF30711CFC8D} = {D0742357-F9E7-4BA8-9DBF-9D18CBA93448}
+	EndGlobalSection
+EndGlobal
