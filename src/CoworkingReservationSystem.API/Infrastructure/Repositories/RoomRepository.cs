@@ -19,6 +19,19 @@ public class RoomRepository
         return await _context.Rooms.FindAsync(id);
     }
 
+    public async Task<IEnumerable<Room>> GetAvailableAsync(DateTime start, DateTime end)
+    {
+
+        var rooms = await _context.Rooms
+                                  .Include(r => r.Reservations)
+                                  .ToListAsync();
+
+        return rooms.Where(room =>
+            room.Reservations.All(res =>
+                res.Status == ReservationStatus.Cancelled ||
+                res.EndTime <= start || res.StartTime >= end));
+    }
+
     public async Task AddAsync(Room room)
     {
         await _context.Rooms.AddAsync(room);

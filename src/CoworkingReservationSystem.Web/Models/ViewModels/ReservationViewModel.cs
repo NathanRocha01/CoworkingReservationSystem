@@ -7,6 +7,8 @@ namespace CoworkingReservationSystem.Web.Models.ViewModels
 {
     public class ReservationViewModel
     {
+        public int Id { get; set; }
+
         [Required(ErrorMessage = "Sala é obrigatória.")]
         public int RoomId { get; set; }
 
@@ -14,7 +16,21 @@ namespace CoworkingReservationSystem.Web.Models.ViewModels
         [FutureDate(ErrorMessage = "A data deve ser futura.")]
         public DateTime ReservationDate { get; set; }
 
+        [Required]
+        public TimeSpan StartTime { get; set; }
+
+        [Required]
+        public TimeSpan EndTime { get; set; }
+
+        public ReservationStatus Status { get; set; } = ReservationStatus.Confirmed;
+
         public List<SelectListItem> AvailableRooms { get; set; } = new List<SelectListItem>();
+
+        public enum ReservationStatus
+        {
+            Confirmed = 1,
+            Canceled = 2
+        }
 
         public class FutureDateAttribute : ValidationAttribute
         {
@@ -23,5 +39,6 @@ namespace CoworkingReservationSystem.Web.Models.ViewModels
                 return value is DateTime date && date > DateTime.Now;
             }
         }
+
     }
 }

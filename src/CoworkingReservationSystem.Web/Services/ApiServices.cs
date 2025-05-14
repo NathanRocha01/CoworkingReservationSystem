@@ -12,6 +12,8 @@ public interface IApiService
     Task<Result> PostAsync(string endpoint, object data);
     Task<Result<T>> PutAsync<T>(string endpoint, object data);
     Task<Result> DeleteAsync(string endpoint);
+    Task<Result<T>> PatchAsync<T>(string endpoint, object data);
+    Task<Result> PatchAsync(string endpoint, object data);
     void SetAuthToken(string token);
 }
 
@@ -153,6 +155,66 @@ public class ApiService : IApiService
         }
     }
 
+
+    public async Task<Result<T>> PatchAsync<T>(string endpoint, object data)
+    {
+        try
+        {
+            await SetAuthHeaderAsync();
+            var content = CreateJsonContent(data);
+
+            var request = new HttpRequestMessage(new HttpMethod("PATCH"), endpoint)
+            {
+                Content = content
+            };
+
+            var response = await _httpClient.SendAsync(request);
+            var responseStream = await response.Content.ReadAsStreamAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorResult = await JsonSerializer.DeserializeAsync<Result>(responseStream);
+                return Result<T>.Failure(errorResult?.Error ?? "Erro desconhecido");
+            }
+
+            var result = await JsonSerializer.DeserializeAsync<T>(responseStream);
+            return Result<T>.Success(result);
+        }
+        catch (Exception ex)
+        {
+            return Result<T>.Failure(ex.Message);
+        }
+    }
+
+    public async Task<Result> PatchAsync(string endpoint, object data)
+    {
+        try
+        {
+            await SetAuthHeaderAsync();
+            var content = CreateJsonContent(data);
+
+            var request = new HttpRequestMessage(new HttpMethod("PATCH"), endpoint)
+            {
+                Content = content
+            };
+
+            var response = await _httpClient.SendAsync(request);
+            var responseStream = await response.Content.ReadAsStreamAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorResult = await JsonSerializer.DeserializeAsync<Result>(responseStream);
+                return Result.Failure(errorResult?.Error ?? "Erro desconhecido");
+            }
+
+            var result = await JsonSerializer.DeserializeAsync<Result>(responseStream);
+            return result.IsSuccess ? Result.Success() : Result.Failure(result.Error);
+        }
+        catch (Exception ex)
+        {
+            return Result.Failure(ex.Message);
+        }
+    }
 
     public void SetAuthToken(string token)
     {

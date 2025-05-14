@@ -1,110 +1,74 @@
-@model CoworkingReservationSystem.Web.Models.ViewModels.ReservationRequestViewModel
+@model CoworkingReservationSystem.Web.Models.ViewModels.ReservationViewModel
+
 @{
     ViewData["Title"] = "Nova Reserva";
 }
 
-<div class="container">
-    <div class="row">
-        <div class="col-md-8 mx-auto">
-            <div class="card shadow-sm ui-widget-content ui-corner-all">
-                <div class="card-header bg-primary text-white ui-corner-top">
-                    <h3><i class="bi bi-calendar-plus"></i> @ViewData["Title"]</h3>
-                </div>
-                <div class="card-body">
-                    <form asp-action="Create" id="reservationForm">
-                        <!-- Sala -->
-                        <div class="mb-3">
-                            <label asp-for="RoomId" class="form-label"></label>
-                            <select asp-for="RoomId" asp-items="Model.AvailableRooms" 
-                                    class="form-select ui-widget-content">
-                                <option value="">Selecione uma sala...</option>
-                            </select>
-                            <span asp-validation-for="RoomId" class="text-danger small"></span>
-                        </div>
+<h2>@ViewData["Title"]</h2>
 
-                        <!-- Data/Hora -->
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label asp-for="StartDate" class="form-label"></label>
-                                <input asp-for="StartDate" type="datetime-local" 
-                                       class="form-control ui-widget-content">
-                                <span asp-validation-for="StartDate" class="text-danger small"></span>
-                            </div>
-                            <div class="col-md-6">
-                                <label asp-for="EndDate" class="form-label"></label>
-                                <input asp-for="EndDate" type="datetime-local" 
-                                       class="form-control ui-widget-content">
-                                <span asp-validation-for="EndDate" class="text-danger small"></span>
-                            </div>
-                        </div>
+<form asp-action="Create" method="post" novalidate>
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-                        <!-- Observações -->
-                        <div class="mb-3">
-                            <label asp-for="Notes" class="form-label"></label>
-                            <textarea asp-for="Notes" class="form-control ui-widget-content" 
-                                      rows="3" placeholder="Detalhes adicionais..."></textarea>
-                        </div>
-
-                        <!-- Ações -->
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <a asp-action="Index" class="btn btn-outline-secondary ui-button">
-                                <i class="bi bi-arrow-left"></i> Voltar
-                            </a>
-                            <button type="submit" class="btn btn-primary ui-button">
-                                <i class="bi bi-check-circle"></i> Reservar
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+    <div class="row g-3 mb-3">
+        <div class="col-md-6">
+            <label for="StartDate" class="form-label">Data de início</label>
+            <input id="StartDate" type="text" class="form-control" placeholder="dd/mm/aaaa" />
+            <input id="StartTime" type="time" class="form-control mt-1" />
+        </div>
+        <div class="col-md-6">
+            <label for="EndDate" class="form-label">Data de término</label>
+            <input id="EndDate" type="text" class="form-control" placeholder="dd/mm/aaaa" />
+            <input id="EndTime" type="time" class="form-control mt-1" />
         </div>
     </div>
-</div>
+
+    <div class="mb-3">
+        <label asp-for="RoomId" class="form-label">Sala</label>
+        <select id="RoomId" asp-for="RoomId" class="form-select">
+            <option value="">-- Selecione uma sala --</option>
+        </select>
+        <span asp-validation-for="RoomId" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Confirmar Reserva</button>
+</form>
 
 @section Scripts {
+    <partial name="_ValidationScriptsPartial" />
     <script>
-        $(function() {
-            // Datepicker jQuery UI
-            $("input[type='datetime-local']").each(function() {
-                $(this).attr("type", "text").datepicker({
-                    dateFormat: "yy-mm-dd",
-                    minDate: 0
-                });
-            });
+        // Datepicker localisation (pt-BR)
+        $.datepicker.setDefaults($.datepicker.regional["pt-BR"] || {});
+        $("#StartDate, #EndDate").datepicker({ dateFormat: "dd/mm/yy" });
 
-            // Timepicker
-            $("#StartDate, #EndDate").timepicker({
-                timeFormat: "HH:mm",
-                step: 30
-            });
+        function toIso(dateStr, timeStr) {
+            // dd/mm/yyyy -> yyyy-MM-ddTHH:mm:ss
+            const [d, m, y] = dateStr.split('/');
+            return new Date(`${y}-${m}-${d}T${timeStr}`);
+        }
 
-            // Validação
-            $("#reservationForm").validate({
-                rules: {
-                    RoomId: "required",
-                    StartDate: {
-                        required: true,
-                        date: true
-                    },
-                    EndDate: {
-                        required: true,
-                        date: true,
-                        greaterThanStart: "#StartDate"
+        function fetchRooms() {
+            const sd = $("#StartDate").val(), st = $("#StartTime").val();
+            const ed = $("#EndDate").val(), et = $("#EndTime").val();
+            if (!sd || !st || !ed || !et) return;
+            const startIso = toIso(sd, st).toISOString();
+            const endIso   = toIso(ed, et).toISOString();
+
+            $.get('@Url.Action("GetAvailableRooms", "Reservation")', { start: startIso, end: endIso })
+                .done(function (rooms) {
+                    const $sel = $("#RoomId");
+                    $sel.empty();
+                    if (rooms && rooms.length) {
+                        $sel.append($('<option>', { value: "", text: "-- Selecione uma sala --" }));
+                        rooms.forEach(r => {
+                            $sel.append($('<option>', { value: r.id, text: `${r.name} (Capacidade: ${r.capacity})` }));
+                        });
+                    } else {
+                        $sel.append($('<option>', { value: "", text: "Nenhuma sala disponível", disabled: true }));
                     }
-                },
-                messages: {
-                    EndDate: {
-                        greaterThanStart: "O término deve ser após o início"
-                    }
-                }
-            });
+                })
+                .fail(() => alert('Erro ao buscar salas.'));
+        }
 
-            // Método customizado para validar datas
-            $.validator.addMethod("greaterThanStart", function(value, element, params) {
-                const startDate = new Date($(params).val());
-                const endDate = new Date(value);
-                return endDate > startDate;
-            });
-        });
+        $("#StartDate, #StartTime, #EndDate, #EndTime").on('change', fetchRooms);
     </script>
 }

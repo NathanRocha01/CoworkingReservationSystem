@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CoworkingReservationSystem.Web.Models.ViewModels;
+using Microsoft.AspNetCore.JsonPatch;
+using static CoworkingReservationSystem.Web.Models.ViewModels.ReservationViewModel;
 namespace CoworkingReservationSystem.Web.Controllers
 {
     public class ReservationController : Controller
@@ -89,9 +91,12 @@ namespace CoworkingReservationSystem.Web.Controllers
         [HttpPatch]
         public async Task<IActionResult> Cancel(int id)
         {
-            var updateStatus = new { Status = "Cancelada" };
+            var updateModel = new ReservationViewModel
+            {
+                Status = ReservationStatus.Canceled
+            };
 
-            var result = await _apiService.PutAsync($"api/Reservations/{id}/Status", updateStatus);
+            var result = await _apiService.PatchAsync($"api/Reservations/{id}", updateModel);
 
             if (!result.IsSuccess)
                 TempData["Error"] = result.Error;

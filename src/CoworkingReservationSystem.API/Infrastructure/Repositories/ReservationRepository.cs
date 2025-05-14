@@ -34,7 +34,7 @@ public class ReservationRepository
         _context.Entry(reservation).State = EntityState.Modified;
     }
 
-    public async Task<bool> HasTimeConflictAsync(int roomId, DateTime date, TimeSpan startTime, TimeSpan endTime)
+    public async Task<bool> HasTimeConflictAsync(int roomId, DateTime date, DateTime startTime, DateTime endTime)
     {
         return await _context.Reservations
             .AnyAsync(r => r.RoomId == roomId &&

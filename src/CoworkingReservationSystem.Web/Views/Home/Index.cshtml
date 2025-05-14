@@ -1,106 +1,76 @@
-﻿@{
-    ViewData["Title"] = "Home - Sistema de Reservas";
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@{
+    ViewData["Title"] = "Bem-vindo";
 }
 
-<div class="container-fluid px-0">
-    <!-- Hero Section com Efeito Paralax -->
-    <div class="parallax-section" style="background-image: url('/images/coworking-space.jpg');">
-        <div class="hero-overlay">
-            <h1 class="display-3 fw-bold text-white">Bem-vindo ao Coworking</h1>
-            <p class="lead text-light">Reserve salas inteligentes com um clique</p>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 text-center">
+            <h1 class="display-4 mb-4 fw-bold text-primary">
+                <i class="bi bi-building"></i> Bem-vindo ao CoworkingReservationSystem
+            </h1>
 
-            <div class="cta-buttons mt-4">
-                @if (User.Identity.IsAuthenticated)
-                {
-                        <button id="newReservationBtn" class="btn btn-primary btn-lg ui-button">
-                            <i class="bi bi-calendar-plus"></i> Nova Reserva
-                        </button>
-                }
-                else
-                {
-                        <a asp-controller="Account" asp-action="Login" class="btn btn-primary btn-lg ui-button">
-                            <i class="bi bi-box-arrow-in-right"></i> Entrar
-                        </a>
-                }
-            </div>
-        </div>
-    </div>
+            <p class="lead mb-5">
+                Sistema de gerenciamento e reserva de salas de reunião.
+                Utilize o menu superior para navegar entre as funcionalidades.
+            </p>
 
-    <!-- Features com Accordion jQuery UI -->
-    <div class="container my-5">
-        <h2 class="text-center mb-4">Nossos Diferenciais</h2>
-        <div id="featuresAccordion" class="ui-accordion">
-            <h3 class="ui-accordion-header"><i class="bi bi-speedometer2 me-2"></i>Agilidade</h3>
-            <div class="ui-accordion-content">
-                <p>Reservas em menos de 1 minuto com nosso sistema otimizado.</p>
-                <div class="progress ui-progressbar">
-                    <div class="progress-bar" style="width: 95%">95% mais rápido</div>
+            <div class="row g-4">
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    <div class="col-md-4">
+                        <div class="card h-100 border-primary">
+                            <div class="card-body text-center">
+                                <i class="bi bi-calendar-plus fs-1 text-primary mb-3"></i>
+                                <h5 class="card-title">Nova Reserva</h5>
+                                <p class="card-text">Agende uma sala para sua próxima reunião</p>
+                                <a asp-controller="Reservation" asp-action="Create" class="btn btn-primary">
+                                    Reservar
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <div class="col-md-4">
+                    <div class="card h-100 border-success">
+                        <div class="card-body text-center">
+                            <i class="bi bi-door-open fs-1 text-success mb-3"></i>
+                            <h5 class="card-title">Nossas Salas</h5>
+                            <p class="card-text">Conheça nossas salas e equipamentos disponíveis</p>
+                            <a asp-controller="Rooms" asp-action="Index" class="btn btn-success">
+                                Ver Salas
+                            </a>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            <h3 class="ui-accordion-header"><i class="bi bi-shield-lock me-2"></i>Segurança</h3>
-            <div class="ui-accordion-content">
-                <p>Todas as reservas são criptografadas e protegidas.</p>
+                <div class="col-md-4">
+                    <div class="card h-100 border-info">
+                        <div class="card-body text-center">
+                            <i class="bi bi-calendar-check fs-1 text-info mb-3"></i>
+                            <h5 class="card-title">Disponibilidade</h5>
+                            <p class="card-text">Verifique a disponibilidade das salas por data</p>
+                            <a asp-controller="Rooms" asp-action="Available" class="btn btn-info">
+                                Consultar
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 @section Styles {
-        <style>
-            .parallax-section {
-                height: 70vh;
-                background-attachment: fixed;
-                background-position: center;
-                background-repeat: no-repeat;
-                background-size: cover;
-                position: relative;
-            }
-            .hero-overlay {
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                text-align: center;
-            }
-            .ui-accordion-content {
-                padding: 20px;
-                background: #f8f9fa;
-                border-radius: 0 0 5px 5px;
-            }
-            .ui-button {
-                transition: all 0.3s !important;
-            }
-        </style>
-}
-
-@section Scripts {
-        <script>
-            $(function() {
-                // Accordion jQuery UI
-                $("#featuresAccordion").accordion({
-                    heightStyle: "content",
-                    collapsible: true,
-                    active: 0
-                });
-
-                // Botão com efeito jQuery UI
-                $(".ui-button").button().hover(
-                    function() {
-                        $(this).addClass("ui-state-hover");
-                    },
-                    function() {
-                        $(this).removeClass("ui-state-hover");
-                    }
-                );
-
-                // Progress Bar animado
-                $(".ui-progressbar").progressbar({
-                    value: false,
-                    change: function() {
-                        $(".ui-progressbar .progress-bar").css("width", "95%");
-                    }
-                });
-            });
-        </script>
+    <style>
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+    </style>
 }

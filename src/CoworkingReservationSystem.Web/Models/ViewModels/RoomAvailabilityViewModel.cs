@@ -22,7 +22,7 @@ namespace CoworkingReservationSystem.Web.Models.ViewModels
 
         public List<AvailableRoomDto> AvailableRooms { get; set; } = new();
 
-        // Validação customizada para data final > data inicial
+        
         public class DateGreaterThanAttribute : ValidationAttribute
         {
             private readonly string _comparisonProperty;

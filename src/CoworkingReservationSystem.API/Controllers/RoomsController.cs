@@ -18,6 +18,16 @@ public class RoomsController : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("available")]
+    public async Task<IActionResult> Available(DateTime start, DateTime end)
+    {
+        if (end <= start) return BadRequest("Intervalo inválido");
+    
+        var rooms = await _roomService. GetAvailableAsync(start, end);
+        // Projeção leve para DTO
+        return Ok(rooms.Select(r => new { r.Id, r.Name, r.Capacity }));
+    }
+
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] RoomRequest dto)
     {

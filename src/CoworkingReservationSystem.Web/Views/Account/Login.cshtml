@@ -2,119 +2,21 @@
 @{
     ViewData["Title"] = "Login";
 }
-
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-5">
-            <div class="card login-card ui-widget ui-widget-content ui-corner-all">
-                <div class="card-header bg-primary text-white ui-corner-top">
-                    <h3 class="text-center"><i class="bi bi-box-arrow-in-right"></i> Acesso ao Sistema</h3>
-                </div>
-                <div class="card-body">
-                    <form id="loginForm" asp-action="Login" method="post">
-                        <!-- Email -->
-                        <div class="mb-3">
-                            <label asp-for="Email" class="form-label"></label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                                <input asp-for="Email" class="form-control ui-widget-content" placeholder="seu@email.com">
-                            </div>
-                            <span asp-validation-for="Email" class="text-danger small"></span>
-                        </div>
-
-                        <!-- Senha -->
-                        <div class="mb-3">
-                            <label asp-for="Password" class="form-label"></label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                                <input asp-for="Password" type="password" class="form-control ui-widget-content" placeholder="••••••">
-                                <button id="togglePassword" type="button" class="btn btn-outline-secondary">
-                                    <i class="bi bi-eye"></i>
-                                </button>
-                            </div>
-                            <span asp-validation-for="Password" class="text-danger small"></span>
-                        </div>
-
-                        <!-- Submit -->
-                        <button type="submit" class="btn btn-primary w-100 ui-button">
-                            <i class="bi bi-box-arrow-in-right"></i> Entrar
-                        </button>
-
-                        <!-- Links -->
-                        <div class="mt-3 text-center">
-                            <a asp-action="Register" class="text-decoration-none">Criar nova conta</a> | 
-                            <a href="#" id="forgotPassword" class="text-decoration-none">Esqueci minha senha</a>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+<h2>@ViewData["Title"]</h2>
+<form asp-action="Login" method="post" class="w-100 w-md-50">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label"></label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
     </div>
-</div>
-
-@section Styles {
-    <style>
-        .login-card {
-            margin-top: 5vh;
-            border: none;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-        }
-        .input-group-text {
-            background-color: #f8f9fa;
-        }
-        .ui-widget-content {
-            border-color: #dee2e6;
-        }
-    </style>
-}
-
+    <div class="mb-3">
+        <label asp-for="Password" class="form-label"></label>
+        <input asp-for="Password" type="password" class="form-control" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Entrar</button>
+</form>
 @section Scripts {
-    <script>
-        $(function() {
-            // Efeitos jQuery UI
-            $(".ui-widget-content").addClass("ui-corner-all");
-            $(".ui-button").button();
-
-            // Mostrar/ocultar senha
-            $("#togglePassword").click(function() {
-                const passwordField = $("#Password");
-                const icon = $(this).find("i");
-                
-                if (passwordField.attr("type") === "password") {
-                    passwordField.attr("type", "text");
-                    icon.removeClass("bi-eye").addClass("bi-eye-slash");
-                } else {
-                    passwordField.attr("type", "password");
-                    icon.removeClass("bi-eye-slash").addClass("bi-eye");
-                }
-            });
-
-            // Validação interativa
-            $("#loginForm").validate({
-                rules: {
-                    Email: {
-                        required: true,
-                        email: true
-                    },
-                    Password: {
-                        required: true,
-                        minlength: 6
-                    }
-                },
-                messages: {
-                    Email: "Por favor, insira um e-mail válido",
-                    Password: "A senha deve ter pelo menos 6 caracteres"
-                },
-                errorClass: "text-danger small",
-                errorElement: "span"
-            });
-
-            // Efeito no link de esqueci a senha
-            $("#forgotPassword").button().on("click", function(e) {
-                e.preventDefault();
-                $(this).effect("highlight", { color: "#ffcccb" }, 1000);
-                alert("Use o link 'Criar nova conta' para redefinir sua senha");
-            });
-        });
-    </script>
+    <partial name="_ValidationScriptsPartial" />
 }

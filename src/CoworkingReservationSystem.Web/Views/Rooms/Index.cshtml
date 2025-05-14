@@ -1,101 +1,29 @@
 @model IEnumerable<CoworkingReservationSystem.Web.Models.ViewModels.RoomViewModel>
+
 @{
-    ViewData["Title"] = "Gerenciamento de Salas";
+    ViewData["Title"] = "Salas";
 }
 
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="bi bi-door-open"></i> @ViewData["Title"]</h2>
-        <a asp-action="Create" class="btn btn-primary ui-button">
-            <i class="bi bi-plus-circle"></i> Nova Sala
-        </a>
-    </div>
+<h2>@ViewData["Title"]</h2>
 
-    <div class="card ui-widget-content">
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover" id="roomsTable">
-                    <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>Capacidade</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model)
-                        {
-                            <tr>
-                                <td>@item.Name</td>
-                                <td>@item.Capacity</td>
-                                <td>@item.Facilities</td>
-                                <td>
-                                    <span class="badge @(item.IsActive ? "bg-success" : "bg-secondary")">
-                                        @(item.IsActive ? "Ativa" : "Inativa")
-                                    </span>
-                                </td>
-                                <td>
-                                    <div class="btn-group">
-                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning ui-button">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        <button class="btn btn-sm btn-danger delete-room ui-button" data-id="@item.Id">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-
-@section Scripts {
-    <script>
-        $(function () {
-            // DataTable com estilo jQuery UI
-            $('#roomsTable').DataTable({
-                language: {
-                    url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Portuguese-Brasil.json'
-                },
-                dom: '<"top"lf>rt<"bottom"ip>'
-            });
-
-            // Confirmação de exclusão
-            $('.delete-room').click(function () {
-                var roomId = $(this).data('id');
-
-                $("#dialog-confirm").dialog({
-                    resizable: false,
-                    height: "auto",
-                    width: 400,
-                    modal: true,
-                    buttons: {
-                        "Confirmar Exclusão": function () {
-                            $.post('@Url.Action("Delete", "Room")', { id: roomId })
-                                .done(function () {
-                                    location.reload();
-                                })
-                                .fail(function () {
-                                    alert("Ocorreu um erro ao excluir a sala.");
-                                });
-                            $(this).dialog("close");
-                        },
-                        "Cancelar": function () {
-                            $(this).dialog("close");
-                        }
-                    }
-                });
-            });
-        });
-    </script>
-
-    <div id="dialog-confirm" title="Excluir Sala" style="display:none;">
-        <p>
-            <span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>
-            Tem certeza que deseja excluir esta sala? Esta ação não pode ser desfeita.
-        </p>
-    </div>
-}
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Capacidade</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var room in Model)
+        {
+            <tr>
+                <td>@room.Name</td>
+                <td>@room.Capacity</td>
+                <td>
+                    <a asp-controller="Reservation" asp-action="Create" asp-route-roomId="@room.Id" class="btn btn-sm btn-primary">Reservar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

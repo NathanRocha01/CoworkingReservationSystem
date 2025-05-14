@@ -9,10 +9,10 @@ public class ReservationRequest
     public DateTime ReservationDate { get; set; }
 
     [Required]
-    public TimeSpan StartTime { get; set; }
+    public DateTime StartTime { get; set; }
 
     [Required, EndTimeAfterStart]
-    public TimeSpan EndTime { get; set; }
+    public DateTime EndTime { get; set; }
 
 }
 
@@ -29,7 +29,7 @@ public class EndTimeAfterStartAttribute : ValidationAttribute
     protected override ValidationResult IsValid(object value, ValidationContext context)
     {
         var instance = context.ObjectInstance as ReservationRequest;
-        if (instance == null || value is not TimeSpan endTime)
+        if (instance == null || value is not DateTime endTime)
             return ValidationResult.Success;
 
         return endTime > instance.StartTime

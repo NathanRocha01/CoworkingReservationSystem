@@ -18,6 +18,17 @@ public class RoomService
         });
     }
 
+    public async Task<IEnumerable<RoomResponse>> GetAvailableAsync(DateTime start, DateTime end)
+    {
+        var rooms = await _unitOfWork.Rooms.GetAvailableAsync(start,end);
+        return rooms.Select(r => new RoomResponse
+        {
+            Id = r.Id,
+            Name = r.Name,
+            Capacity = r.Capacity,
+        });
+    }
+
     public async Task<Result> CreateRoomAsync(RoomRequest request)
     {
         var room = new Room

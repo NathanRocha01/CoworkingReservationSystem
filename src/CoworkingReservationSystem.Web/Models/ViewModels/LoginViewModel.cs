@@ -12,7 +12,5 @@ namespace CoworkingReservationSystem.Web.Models.ViewModels
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
-        [Display(Name = "Lembrar-me")]
-        public bool RememberMe { get; set; }
     }
 }

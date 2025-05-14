@@ -1,143 +1,51 @@
-@model CoworkingReservationSystem.Web.Models.ViewModels.RoomAvailabilityViewModel
 @{
-    ViewData["Title"] = "Salas Disponíveis";
+    ViewData["Title"] = "Salas disponíveis";
 }
 
-<div class="container mt-4">
-    <h2><i class="bi bi-search"></i> @ViewData["Title"]</h2>
-    
-    <div class="card ui-widget-content mt-3">
-        <div class="card-header bg-light">
-            <h5 class="mb-0"><i class="bi bi-filter"></i> Filtros</h5>
-        </div>
-        <div class="card-body">
-            <form id="filterForm" method="get" class="row g-3">
-                <div class="col-md-3">
-                    <label asp-for="SelectedDate" class="form-label">Data</label>
-                    <input asp-for="SelectedDate" type="date" class="form-control ui-widget-content" 
-                           min="@DateTime.Today.ToString("yyyy-MM-dd")">
-                </div>
-                
-                <div class="col-md-3">
-                    <label asp-for="StartTime" class="form-label">Hora Início</label>
-                    <select asp-for="StartTime" class="form-select ui-widget-content">
-                        @for (var hour = 8; hour <= 20; hour++)
-                        {
-                            <option value="@hour:00">@hour:00</option>
-                            <option value="@hour:30">@hour:30</option>
-                        }
-                    </select>
-                </div>
-                
-                <div class="col-md-3">
-                    <label asp-for="EndTime" class="form-label">Hora Fim</label>
-                    <select asp-for="EndTime" class="form-select ui-widget-content">
-                        @for (var hour = 8; hour <= 20; hour++)
-                        {
-                            <option value="@hour:00">@hour:00</option>
-                            <option value="@hour:30">@hour:30</option>
-                        }
-                    </select>
-                </div>
-                
-                <div class="col-md-3 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary ui-button w-100">
-                        <i class="bi bi-search"></i> Buscar
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-    
-    <div class="row mt-4">
-        @foreach (var room in Model.AvailableRooms)
-        {
-            <div class="col-md-4 mb-4">
-                <div class="card h-100 ui-widget-content">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="card-title mb-0">@room.Name</h5>
-                    </div>
-                    <div class="card-body">
-                        <p><i class="bi bi-people"></i> Capacidade: @room.Capacity pessoas</p>
-                        <p><i class="bi bi-gear"></i> Recursos: @room.Facilities</p>
-                        
-                        <div class="availability-info mt-3 p-3 bg-light rounded">
-                            <h6><i class="bi bi-clock"></i> Disponível:</h6>
-                            <p>@Model.StartTime - @Model.EndTime</p>
-                        </div>
-                    </div>
-                    <div class="card-footer bg-transparent">
-                        <a asp-controller="Reservation" asp-action="Create" 
-                           asp-route-roomId="@room.Id"
-                           asp-route-date="@Model.SelectedDate.ToString("yyyy-MM-dd")"
-                           asp-route-startTime="@Model.StartTime"
-                           asp-route-endTime="@Model.EndTime"
-                           class="btn btn-success ui-button w-100">
-                            <i class="bi bi-bookmark-plus"></i> Reservar
-                        </a>
-                    </div>
-                </div>
-            </div>
-        }
-        
-        @if (!Model.AvailableRooms.Any())
-        {
-            <div class="col-12">
-                <div class="alert alert-warning ui-widget-content">
-                    <i class="bi bi-exclamation-triangle"></i> Nenhuma sala disponível para o horário selecionado.
-                </div>
-            </div>
-        }
-    </div>
-</div>
+<h2>@ViewData["Title"]</h2>
 
-@section Scripts {
+<form id="availabilityForm" class="row g-3 mb-4">
+    <div class="col-md-4">
+        <label for="Date" class="form-label">Data</label>
+        <input id="Date" type="text" class="form-control" placeholder="dd/mm/aaaa" />
+    </div>
+    <div class="col-md-3">
+        <label for="StartTime" class="form-label">Hora início</label>
+        <input id="StartTime" type="time" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <label for="EndTime" class="form-label">Hora término</label>
+        <input id="EndTime" type="time" class="form-control" />
+    </div>
+    <div class="col-md-2 d-flex align-items-end">
+        <button type="button" id="btnCheck" class="btn btn-success w-100">Verificar</button>
+    </div>
+</form>
+
+<table class="table table-striped d-none" id="roomsTable">
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Capacidade</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+
     <script>
-        $(function() {
-            // Aplicar estilos jQuery UI
-            $(".ui-widget-content").addClass("ui-corner-all");
-            $(".ui-button").button();
-            
-            // Validação do formulário de filtro
-            $("#filterForm").validate({
-                rules: {
-                    SelectedDate: {
-                        required: true,
-                        date: true
-                    },
-                    StartTime: {
-                        required: true,
-                        timeEarlierThan: "#EndTime"
-                    },
-                    EndTime: {
-                        required: true,
-                        timeLaterThan: "#StartTime"
-                    }
-                },
-                messages: {
-                    SelectedDate: "Por favor, selecione uma data válida",
-                    StartTime: "O horário de início deve ser antes do término",
-                    EndTime: "O horário de término deve ser depois do início"
-                },
-                errorClass: "text-danger small",
-                errorElement: "span"
-            });
-            
-            // Validador customizado para horários
-            $.validator.addMethod("timeEarlierThan", function(value, element, param) {
-                if (!value || !$(param).val()) return true;
-                return parseTime(value) < parseTime($(param).val());
-            }, "O horário de início deve ser antes do término");
-            
-            $.validator.addMethod("timeLaterThan", function(value, element, param) {
-                if (!value || !$(param).val()) return true;
-                return parseTime(value) > parseTime($(param).val());
-            }, "O horário de término deve ser depois do início");
-            
-            function parseTime(timeStr) {
-                const parts = timeStr.split(':');
-                return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+        $("#Date").datepicker({ dateFormat: "dd/mm/yy" });
+
+        function renderTable(rooms) {
+            const $tbl = $("#roomsTable");
+            const $body = $tbl.find("tbody").empty();
+            if (rooms.length) {
+                rooms.forEach(r => {
+                    $body.append(`<tr><td>${r.name}</td><td>${r.capacity}</td><td>
+                        <a class='btn btn-sm btn-primary' href='/Reservation/Create?roomId=${r.id}'>Reservar</a>`);
+                });
+            } else {
+                $body.append("<tr><td colspan='3'>Nenhuma sala disponível</td></tr>");
             }
-        });
-    </script>
-}
+        }

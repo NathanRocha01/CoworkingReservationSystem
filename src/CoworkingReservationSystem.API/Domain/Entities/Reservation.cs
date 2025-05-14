@@ -10,7 +10,9 @@ public class Reservation
     [ForeignKey("UserId")]
     public User User { get; set; }
     public DateTime ReservationDate { get; set; }
-    public TimeSpan StartTime { get; set; }
-    public TimeSpan EndTime { get; set; }
+    public DateTime StartTime { get; set; }
+    public DateTime EndTime { get; set; }
     public ReservationStatus Status { get; set; }
+    public bool Overlaps(DateTime start, DateTime end)
+        => StartTime < end && EndTime > start; 
 }

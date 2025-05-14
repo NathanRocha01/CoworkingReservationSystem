@@ -1,109 +1,42 @@
-@model CoworkingReservationSystem.Web.Models.ViewModels.RegisterViewModel
+@model IEnumerable<CoworkingReservationSystem.Web.Models.ViewModels.ReservationViewModel>
+
 @{
     ViewData["Title"] = "Minhas Reservas";
 }
 
-<div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="bi bi-calendar-check"></i> @ViewData["Title"]</h2>
-        <a asp-action="Create" class="btn btn-primary ui-button">
-            <i class="bi bi-plus-circle"></i> Nova Reserva
-        </a>
-    </div>
+<h2>@ViewData["Title"]</h2>
 
-    <div class="card shadow-sm ui-widget-content">
-        <div class="card-body">
-            <!-- Filtros -->
-            <div class="row mb-4">
-                <div class="col-md-3">
-                    <input type="text" id="searchInput" class="form-control ui-widget-content" placeholder="Buscar sala...">
-                </div>
-                <div class="col-md-3">
-                    <select id="statusFilter" class="form-select ui-widget-content">
-                        <option value="">Todos status</option>
-                        <option value="Confirmada">Confirmadas</option>
-                        <option value="Cancelada">Canceladas</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Tabela -->
-            <div class="table-responsive">
-                <table class="table table-hover" id="reservationsTable">
-                    <thead>
-                        <tr>
-                            <th>Sala</th>
-                            <th>Data</th>
-                            <th>Horário</th>
-                            <th>Status</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model)
-                        {
-                            <tr class="ui-state-default">
-                                <td>@item.RoomName</td>
-                                <td>@item.StartDate.ToString("dd/MM/yyyy")</td>
-                                <td>@item.StartDate.ToString("HH:mm")-@item.EndDate.ToString("HH:mm")</td>
-                                <td>
-                                    <span class="badge bg-@(item.Status == "Confirmada" ? "success" : "warning")">
-                                        @item.Status
-                                    </span>
-                                </td>
-                                <td>
-                                    <a asp-action="Details" asp-route-id="@item.Id"
-                                       class="btn btn-sm btn-outline-info ui-button"
-                                       title="Detalhes">
-                                        <i class="bi bi-eye"></i>
-                                    </a>
-                                    @if (item.CanEdit)
-                                    {
-                                        <a asp-action="Edit" asp-route-id="@item.Id"
-                                           class="btn btn-sm btn-outline-primary ui-button"
-                                           title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                    }
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-
-@section Scripts {
-    <script>
-        $(function () {
-            // DataTables com jQuery UI
-            $("#reservationsTable").DataTable({
-                dom: '<"top"f>rt<"bottom"lip>',
-                language: {
-                    url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/pt-BR.json'
-                },
-                initComplete: function () {
-                    $(".dataTables_filter input").addClass("ui-widget-content");
-                }
-            });
-
-            // Filtros
-            $("#statusFilter").change(function () {
-                const table = $("#reservationsTable").DataTable();
-                table.column(3).search(this.value).draw();
-            });
-
-            // Efeito hover nas linhas
-            $("tr.ui-state-default").hover(
-                function () {
-                    $(this).addClass("ui-state-hover");
-                },
-                function () {
-                    $(this).removeClass("ui-state-hover");
-                }
-            );
-        });
-    </script>
-}
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Sala</th>
+            <th>Data de Criação da Reserva</th>
+            <th>Início</th>
+            <th>Término</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var res in Model)
+        {
+            <tr>
+                <td>@res.RoomId</td>
+                <td>@res.ReservationDate.ToString("dd/MM/yyyy")</td>
+                <td>@res.StartTime.ToString("HH:mm")</td>
+                <td>@res.EndTime.ToString("HH:mm")</td>
+                <td>@res.Status</td>
+                <td>
+                    @if (res.Status == 0)
+                    {
+                        <form asp-action="Cancel" asp-route-id="@res.Id" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-warning" title="Cancelar">
+                                <span class="bi bi-x-circle"></span> Cancelar
+                            </button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
