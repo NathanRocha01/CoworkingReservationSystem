@@ -24,8 +24,7 @@ public class RoomsController : ControllerBase
         if (end <= start) return BadRequest("Intervalo inválido");
     
         var rooms = await _roomService. GetAvailableAsync(start, end);
-        // Projeção leve para DTO
-        return Ok(rooms.Select(r => new { r.Id, r.Name, r.Capacity }));
+        return Ok(rooms);
     }
 
     [HttpPost]

@@ -1,51 +1,65 @@
+@model CoworkingReservationSystem.Web.Models.ViewModels.RoomAvailabilityViewModel
 @{
-    ViewData["Title"] = "Salas disponíveis";
+    ViewData["Title"] = "Verificar Disponibilidade";
 }
-
-<h2>@ViewData["Title"]</h2>
-
-<form id="availabilityForm" class="row g-3 mb-4">
-    <div class="col-md-4">
-        <label for="Date" class="form-label">Data</label>
-        <input id="Date" type="text" class="form-control" placeholder="dd/mm/aaaa" />
+<h2 class="mb-4">@ViewData["Title"]</h2>
+<form id="dispForm" class="row gx-3 gy-2 align-items-end">
+    <div class="col-sm-4">
+        <label asp-for="StartDate" class="form-label">Início</label>
+        <input asp-for="StartDate" type="datetime-local" class="form-control" />
+        <span asp-validation-for="StartDate" class="text-danger"></span>
     </div>
-    <div class="col-md-3">
-        <label for="StartTime" class="form-label">Hora início</label>
-        <input id="StartTime" type="time" class="form-control" />
+    <div class="col-sm-4">
+        <label asp-for="EndDate" class="form-label">Término</label>
+        <input asp-for="EndDate" type="datetime-local" class="form-control" />
+        <span asp-validation-for="EndDate" class="text-danger"></span>
     </div>
-    <div class="col-md-3">
-        <label for="EndTime" class="form-label">Hora término</label>
-        <input id="EndTime" type="time" class="form-control" />
-    </div>
-    <div class="col-md-2 d-flex align-items-end">
-        <button type="button" id="btnCheck" class="btn btn-success w-100">Verificar</button>
+    <div class="col-sm-4">
+        <button type="submit" class="btn btn-info w-100">Consultar</button>
     </div>
 </form>
 
-<table class="table table-striped d-none" id="roomsTable">
-    <thead>
-        <tr>
-            <th>Nome</th>
-            <th>Capacidade</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody></tbody>
-</table>
-
-
-    <script>
-        $("#Date").datepicker({ dateFormat: "dd/mm/yy" });
-
-        function renderTable(rooms) {
-            const $tbl = $("#roomsTable");
-            const $body = $tbl.find("tbody").empty();
-            if (rooms.length) {
-                rooms.forEach(r => {
-                    $body.append(`<tr><td>${r.name}</td><td>${r.capacity}</td><td>
-                        <a class='btn btn-sm btn-primary' href='/Reservation/Create?roomId=${r.id}'>Reservar</a>`);
-                });
-            } else {
-                $body.append("<tr><td colspan='3'>Nenhuma sala disponível</td></tr>");
+<div id="resultado" class="mt-4">
+    @if (Model.AvailableRooms?.Any() == true)
+    {
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+            @foreach (var sala in Model.AvailableRooms)
+            {
+                <div class="col">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                @sala.Name
+                            </h5>
+                            <p class="card-text">
+                                Capacidade: @sala.Capacity pessoas <br />
+                            </p>
+                            <a asp-controller="Reservation" asp-action="Create" asp-route-roomId="@sala.Id"
+                               class="btn btn-outline-primary">
+                                Reservar
+                            </a>
+                        </div>
+                    </div>
+                </div>
             }
-        }
+        </div>
+    }
+    else if (Model.AvailableRooms != null)
+    {
+        <div class="alert alert-warning">Nenhuma sala disponível no período selecionado.</div>
+    }
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $("#dispForm").on("submit", function (e) {
+            e.preventDefault();
+            $.get("@Url.Action("Available", "Rooms")",
+                { start: $("#StartDate").val(), end: $("#EndDate").val() })
+                .done(function (partialHtml) {
+                    $("#resultado").html(partialHtml);
+                });
+        });
+    </script>
+}

@@ -10,17 +10,17 @@ namespace CoworkingReservationSystem.Web.Models.ViewModels
         public int Id { get; set; }
 
         [Required(ErrorMessage = "Sala é obrigatória.")]
-        public int RoomId { get; set; }
+        public string RoomName { get; set; }
 
         [Required(ErrorMessage = "Data e hora são obrigatórias.")]
         [FutureDate(ErrorMessage = "A data deve ser futura.")]
         public DateTime ReservationDate { get; set; }
 
         [Required]
-        public TimeSpan StartTime { get; set; }
+        public DateTime StartTime { get; set; }
 
         [Required]
-        public TimeSpan EndTime { get; set; }
+        public DateTime EndTime { get; set; }
 
         public ReservationStatus Status { get; set; } = ReservationStatus.Confirmed;
 

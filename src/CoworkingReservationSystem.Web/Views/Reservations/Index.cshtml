@@ -1,42 +1,60 @@
 @model IEnumerable<CoworkingReservationSystem.Web.Models.ViewModels.ReservationViewModel>
-
 @{
     ViewData["Title"] = "Minhas Reservas";
 }
+<h2 class="mb-4">@ViewData["Title"]</h2>
 
-<h2>@ViewData["Title"]</h2>
-
-<table class="table table-striped">
-    <thead>
+<table class="table table-striped align-middle">
+    <thead class="table-dark">
         <tr>
             <th>Sala</th>
-            <th>Data de Criação da Reserva</th>
             <th>Início</th>
             <th>Término</th>
             <th>Status</th>
-            <th></th>
+            <th>Ações</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var res in Model)
         {
+            var statusClasse = res.Status.ToString().Equals("Confirmed") ? "badge bg-success" : "badge bg-secondary";
             <tr>
-                <td>@res.RoomId</td>
-                <td>@res.ReservationDate.ToString("dd/MM/yyyy")</td>
-                <td>@res.StartTime.ToString("HH:mm")</td>
-                <td>@res.EndTime.ToString("HH:mm")</td>
-                <td>@res.Status</td>
+                <td>@res.RoomName</td>
+                <td>@res.StartTime.ToString("dd/MM/yyyy HH:mm")</td>
+                <td>@res.EndTime.ToString("dd/MM/yyyy HH:mm")</td>
+                <td><span class="@statusClasse">@res.Status</span></td>
                 <td>
-                    @if (res.Status == 0)
+                    @if (res.Status.ToString().Equals("Confirmed"))
                     {
-                        <form asp-action="Cancel" asp-route-id="@res.Id" method="post" class="d-inline">
-                            <button type="submit" class="btn btn-sm btn-warning" title="Cancelar">
-                                <span class="bi bi-x-circle"></span> Cancelar
-                            </button>
-                        </form>
+                        <button class="btn btn-sm btn-outline-danger cancelar-btn" data-id="@res.Id">
+                            Cancelar
+                        </button>
                     }
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@@TempData["Error"]</div>
+}
+@section Scripts {
+    <script>
+        $(".cancelar-btn").click(function(){
+            if (!confirm("Tem certeza que deseja cancelar esta reserva?")) return;
+            var id = $(this).data("id");
+            $.ajax({
+                url: '/Reservation/Cancel/' + id,
+                type: 'PATCH',
+                success: function(){
+                    location.reload(); 
+                },
+                error: function(){
+                    alert("Não foi possível cancelar a reserva. Tente novamente.");
+                }
+            });
+        });
+    </script>
+}

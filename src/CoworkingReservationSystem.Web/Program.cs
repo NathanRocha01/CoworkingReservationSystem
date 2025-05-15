@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Identity;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
@@ -12,9 +14,12 @@ builder.Services.AddHttpClient("CoworkingAPI", client =>
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IApiService,ApiService>();
 
+//builder.Services.AddDefaultIdentity<IdentityUser>()
+ //   .AddRoles<IdentityRole>();
+
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30); // Tempo de expiração
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });

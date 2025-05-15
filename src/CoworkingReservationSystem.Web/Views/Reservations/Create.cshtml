@@ -1,74 +1,46 @@
 @model CoworkingReservationSystem.Web.Models.ViewModels.ReservationViewModel
-
 @{
     ViewData["Title"] = "Nova Reserva";
 }
-
-<h2>@ViewData["Title"]</h2>
-
-<form asp-action="Create" method="post" novalidate>
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-    <div class="row g-3 mb-3">
-        <div class="col-md-6">
-            <label for="StartDate" class="form-label">Data de início</label>
-            <input id="StartDate" type="text" class="form-control" placeholder="dd/mm/aaaa" />
-            <input id="StartTime" type="time" class="form-control mt-1" />
-        </div>
-        <div class="col-md-6">
-            <label for="EndDate" class="form-label">Data de término</label>
-            <input id="EndDate" type="text" class="form-control" placeholder="dd/mm/aaaa" />
-            <input id="EndTime" type="time" class="form-control mt-1" />
-        </div>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="RoomId" class="form-label">Sala</label>
-        <select id="RoomId" asp-for="RoomId" class="form-select">
-            <option value="">-- Selecione uma sala --</option>
+<h2 class="mb-4">@ViewData["Title"]</h2>
+<form asp-action="Create" method="post" class="row gy-3" id="reservaForm">
+    <div class="col-md-6">
+        <label asp-for="RoomName" class="form-label">Sala</label>
+        <select asp-for="RoomName" class="form-select">
+            <option value="">-- Selecione --</option>
+            @foreach(var sala in Model.AvailableRooms)
+            {
+                <option value="@sala.Value" selected="@(sala.Selected ? "selected" : "")">
+                    @sala.Text
+                </option>
+            }
         </select>
-        <span asp-validation-for="RoomId" class="text-danger"></span>
+        <span asp-validation-for="RoomName" class="text-danger"></span>
     </div>
-
-    <button type="submit" class="btn btn-primary">Confirmar Reserva</button>
+    <div class="col-md-3">
+        <label asp-for="StartTime" class="form-label">Início</label>
+        <input asp-for="StartTime" type="datetime-local" class="form-control" />
+        <span asp-validation-for="StartTime" class="text-danger"></span>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="EndTime" class="form-label">Término</label>
+        <input asp-for="EndTime" type="datetime-local" class="form-control" />
+        <span asp-validation-for="EndTime" class="text-danger"></span>
+    </div>
+    <div class="col-12 text-end mt-3">
+        <button type="submit" class="btn btn-primary">Confirmar Reserva</button>
+        <a asp-action="Index" class="btn btn-secondary ms-2">Cancelar</a>
+    </div>
 </form>
-
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
-        // Datepicker localisation (pt-BR)
-        $.datepicker.setDefaults($.datepicker.regional["pt-BR"] || {});
-        $("#StartDate, #EndDate").datepicker({ dateFormat: "dd/mm/yy" });
-
-        function toIso(dateStr, timeStr) {
-            // dd/mm/yyyy -> yyyy-MM-ddTHH:mm:ss
-            const [d, m, y] = dateStr.split('/');
-            return new Date(`${y}-${m}-${d}T${timeStr}`);
-        }
-
-        function fetchRooms() {
-            const sd = $("#StartDate").val(), st = $("#StartTime").val();
-            const ed = $("#EndDate").val(), et = $("#EndTime").val();
-            if (!sd || !st || !ed || !et) return;
-            const startIso = toIso(sd, st).toISOString();
-            const endIso   = toIso(ed, et).toISOString();
-
-            $.get('@Url.Action("GetAvailableRooms", "Reservation")', { start: startIso, end: endIso })
-                .done(function (rooms) {
-                    const $sel = $("#RoomId");
-                    $sel.empty();
-                    if (rooms && rooms.length) {
-                        $sel.append($('<option>', { value: "", text: "-- Selecione uma sala --" }));
-                        rooms.forEach(r => {
-                            $sel.append($('<option>', { value: r.id, text: `${r.name} (Capacidade: ${r.capacity})` }));
-                        });
-                    } else {
-                        $sel.append($('<option>', { value: "", text: "Nenhuma sala disponível", disabled: true }));
-                    }
-                })
-                .fail(() => alert('Erro ao buscar salas.'));
-        }
-
-        $("#StartDate, #StartTime, #EndDate, #EndTime").on('change', fetchRooms);
+        $("#StartTime").on("change", function(){
+            const inicio = $(this).val();
+            $("#EndTime").attr("min", inicio);
+            if($("#EndTime").val() < inicio){
+                $("#EndTime").val(inicio);
+            }
+        });
     </script>
 }

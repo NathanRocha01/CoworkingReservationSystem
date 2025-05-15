@@ -1,15 +1,12 @@
 @model IEnumerable<CoworkingReservationSystem.Web.Models.ViewModels.RoomViewModel>
-
 @{
-    ViewData["Title"] = "Salas";
+    ViewData["Title"] = "Salas Disponíveis";
 }
-
-<h2>@ViewData["Title"]</h2>
-
-<table class="table table-striped">
-    <thead>
+<h2 class="mb-4">@ViewData["Title"]</h2>
+<table class="table table-hover align-middle">
+    <thead class="table-light">
         <tr>
-            <th>Nome</th>
+            <th>Nome da Sala</th>
             <th>Capacidade</th>
             <th></th>
         </tr>
@@ -19,10 +16,7 @@
         {
             <tr>
                 <td>@room.Name</td>
-                <td>@room.Capacity</td>
-                <td>
-                    <a asp-controller="Reservation" asp-action="Create" asp-route-roomId="@room.Id" class="btn btn-sm btn-primary">Reservar</a>
-                </td>
+                <td>@room.Capacity pessoas</td>
             </tr>
         }
     </tbody>
