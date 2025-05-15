@@ -8,6 +8,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoworkingReservationSystem", "src\CoworkingReservationSystem.API\CoworkingReservationSystem.csproj", "{6D875A9F-2BD8-4C56-9390-BFBE69ED9C1E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoworkingReservationSystem.Web", "src\CoworkingReservationSystem.Web\CoworkingReservationSystem.Web.csproj", "{EEBFBEBF-4F46-4B54-8C88-DF30711CFC8D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6D875A9F-2BD8-4C56-9390-BFBE69ED9C1E} = {6D875A9F-2BD8-4C56-9390-BFBE69ED9C1E}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

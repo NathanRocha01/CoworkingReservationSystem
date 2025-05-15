@@ -1,28 +1,34 @@
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.IdentityModel.Tokens.Jwt;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddHttpClient("CoworkingAPI", client =>
+builder.Services
+    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+
+        options.LoginPath = "/Account/Login";
+
+        options.ExpireTimeSpan = TimeSpan.FromHours(2);
+        options.SlidingExpiration = true;
+    });
+
+builder.Services.AddAuthorization();
+
+builder.Services.AddSession();
+
+builder.Services.AddHttpClient<IApiService, ApiService>(client =>
 {
-    client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]);
+    client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]); 
     client.Timeout = TimeSpan.FromSeconds(
         builder.Configuration.GetValue<int>("ApiSettings:TimeoutSeconds"));
 });
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IApiService,ApiService>();
-
-//builder.Services.AddDefaultIdentity<IdentityUser>()
- //   .AddRoles<IdentityRole>();
-
-builder.Services.AddSession(options =>
-{
-    options.IdleTimeout = TimeSpan.FromMinutes(30);
-    options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
-});
 
 var app = builder.Build();
 
@@ -39,6 +45,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 app.UseSession();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

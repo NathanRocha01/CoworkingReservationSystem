@@ -16,7 +16,9 @@ namespace CoworkingReservationSystem.Web.Controllers
 		[HttpGet]
 		public async Task<IActionResult> Index()
 		{
-			var response = await _apiService.GetAsync<List<RoomViewModel>>("api/Rooms");
+           // var endpoint = "api/Rooms";
+          //  Console.WriteLine($"Chamando API: {_apiService.g}/{endpoint}");
+            var response = await _apiService.GetAsync<List<RoomViewModel>>("api/Rooms");
 			return View(response.Data);
 		}
 	}

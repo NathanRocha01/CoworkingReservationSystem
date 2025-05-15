@@ -1,5 +1,6 @@
 using CoworkingReservationSystem.Web.Models;
 using System;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -23,18 +24,9 @@ public class ApiService : IApiService
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IConfiguration _configuration;
 
-    public ApiService(
-        HttpClient httpClient,
-        IHttpContextAccessor httpContextAccessor,
-        IConfiguration configuration)
+    public ApiService(HttpClient httpClient)
     {
         _httpClient = httpClient;
-        _httpContextAccessor = httpContextAccessor;
-        _configuration = configuration;
-
-        _httpClient.BaseAddress = new Uri(_configuration["ApiSettings:BaseUrl"]);
-        _httpClient.Timeout = TimeSpan.FromSeconds(_configuration.GetValue<int>("ApiSettings:TimeoutSeconds"));
-        _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     }
 
     public async Task<Result<T>> GetAsync<T>(string endpoint)

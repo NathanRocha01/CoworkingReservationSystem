@@ -12,7 +12,7 @@
                 Utilize o menu acima para navegar entre as funcionalidades.
             </p>
             <div class="row g-4">
-                @if (SignInManager.IsSignedIn(User))
+                @if (User.Identity?.IsAuthenticated == true)
                 {
                         <div class="col-md-4">
                             <div class="card border-primary h-100 hover-shadow">
